@@ -3,7 +3,7 @@
 A smart surveillance rover designed for **remote monitoring and bomb detection**.  
 The rover is powered by an **Arduino microcontroller**, equipped with **wireless camera, sensors, and robotic mobility** to assist in hazardous environments where human presence is risky.  
 
----
+
 
 ## 🔹 Features
 - 📷 **Live Surveillance** – Wireless camera for real-time video streaming  
@@ -12,7 +12,7 @@ The rover is powered by an **Arduino microcontroller**, equipped with **wireless
 - 📡 **Remote Control** – Operated wirelessly via RF/IoT module  
 - 🔋 **Battery Powered** – Compact and portable design  
 
----
+
 
 ## 🔹 Hardware Components
 - Arduino UNO / Mega  
@@ -23,7 +23,7 @@ The rover is powered by an **Arduino microcontroller**, equipped with **wireless
 - RF Module / Wi-Fi Module (for remote control)  
 - Battery Pack  
 
----
+
 
 ## 🔹 Software & Tools
 - Arduino IDE (C/C++ programming)  
@@ -31,7 +31,6 @@ The rover is powered by an **Arduino microcontroller**, equipped with **wireless
 - Serial Monitor for debugging  
 - (Optional) IoT Dashboard for monitoring  
 
----
 
 ## 🔹 Working Principle
 1. The **rover navigates** the environment using its motors and avoids obstacles using the ultrasonic sensor.  
@@ -39,7 +38,7 @@ The rover is powered by an **Arduino microcontroller**, equipped with **wireless
 3. **Metal/Gas sensors** detect explosives or hazardous materials.  
 4. Data is sent back to the operator, who can take necessary action.  
 
----
+
 
 ## 🔹 Applications
 - Military and Defense operations  
@@ -47,15 +46,14 @@ The rover is powered by an **Arduino microcontroller**, equipped with **wireless
 - Border surveillance  
 - Remote monitoring in dangerous environments  
 
----
----
+
 
 ## 🔹 Future Enhancements
 - AI-based object detection using camera feed  
 - GPS module for live location tracking  
 - GSM module for SMS alerts in case of bomb detection  
 
----
+
 
 ## 🔹 Author
 **Gayathri G**  
