@@ -1,0 +1,146 @@
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(8, 9, 10, 11, 12, 13);
+int fire = A2;
+int gas = A0;
+int pir = A3;
+int prox = A1;
+char a[60], lat[25], lon[25];
+char gps[100], g;
+int set = 7;
+int aq;
+#define REPORTING_PERIOD_MS 1000
+uint32_t tsLastReport = 0;
+int countTrueCommand, sec = 0, secc = 0, att = 0, hb, hbb, aa;
+unsigned long previousMillis = 0;  // will store last time LED was updated
+const long interval = 1000;
+int cnt, thval = 450;
+void (*resetFunc)(void) = 0;
+void setup() {
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  pinMode(gas, INPUT);
+  pinMode(fire, INPUT);
+  pinMode(pir, INPUT);
+  pinMode(prox, INPUT);
+  pinMode(set, INPUT_PULLUP);
+  lcd.setCursor(0, 0);
+  lcd.print("----------------");
+  lcd.setCursor(0, 1);
+  lcd.print("----------------");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    sec++;
+    secc++;
+  }
+  if (sec > 5) {
+    http_send1();
+    sec = 0;
+  }
+  gas = analogRead(A0) >> 2;
+  lcd.setCursor(0, 0);
+  lcd.print("G:");
+  Lcd_Decimal3(2, 0, gas);
+  if (digitalRead(fire) == LOW) {
+    lcd.setCursor(0, 1);
+    lcd.print(" FIRE DETECTED  ");
+    aa = 1;
+    // delay(500);
+    // http_send1();
+  } else if (digitalRead(prox) == LOW) {
+    lcd.setCursor(0, 1);
+    lcd.print(" BOMB DETECTED  ");
+    aa = 2;
+    // delay(500);
+    // http_send1();
+  } else if (digitalRead(pir) == HIGH) {
+    lcd.setCursor(0, 1);
+    lcd.print("HUMAN DETECETED ");
+    aa = 3;
+    // delay(500);
+    // http_send1();
+  } else if (gas > 200) {
+    lcd.setCursor(0, 1);
+    lcd.print("  GAS DETECTED  ");
+    aa = 4;
+    // delay(500);
+    // http_send1();
+  } else {
+    lcd.setCursor(0, 1);
+    lcd.print("    NORMAL      ");
+    aa = 0;
+  }
+  if (digitalRead(set) == LOW) {
+    aq = 1;
+  } else {
+    aq = 0;
+  }
+  while (Serial.available()) {
+    gps[g] = (char)Serial.read();
+    if (gps[0] != '$') {
+      g = 0;
+      goto last;
+    } else if (gps[0] == '$' && gps[1] != 'G') {
+      g = 1;
+      goto last;
+    } else if (gps[0] == '$' && gps[1] == 'G' && gps[2] != 'P') {
+      g = 2;
+      goto last;
+    } else if (gps[0] == '$' && gps[1] == 'G' && gps[2] == 'P' && gps[3] != 'R') {
+      g = 3;
+      goto last;
+    } else if (gps[0] == '$' && gps[1] == 'G' && gps[2] == 'P' && gps[3] == 'R' && gps[4] != 'M') {
+      g = 4;
+      goto last;
+    } else if (gps[0] == '$' && gps[1] == 'G' && gps[2] == 'P' && gps[3] == 'R' && gps[4] == 'M' && gps[5] != 'C') {
+      if (g < 50) g++;
+      goto last;
+    }
+
+last:;
+  }
+  if (g > 48) {
+    strncpy(lat, gps + 18, 11);
+    strncpy(lon, gps + 32, 9);
+    g = 0;
+  }
+}
+void http_send1() {
+
+  Serial.print(gas);
+  Serial.print(",");
+  if (aq == 1) {
+    Serial.print("1133.24000,7801.13832");
+    // Serial.print("1154.86094,7938.02962");
+    //11.554079500085246, 78.01905848085072
+  } else {
+    Serial.print(lat);
+    Serial.print(lon);
+  }
+  Serial.print(",");
+  if (aa == 1) {Serial.println("FIRE_DETECTED");}
+  else if (aa == 2) { Serial.println("BOMB_DETECTED"); }
+  else if (aa == 3) { Serial.println("HUMAN_DETECTED"); }
+  else if (aa == 4) { Serial.println("GAS_DETECTED"); }
+  else { Serial.println("NORMAL"); }
+}
+void Lcd_Decimal3(unsigned char com, unsigned char com1, unsigned int val) {
+  unsigned int Lcd_h, Lcd_hr, Lcd_t, Lcd_o;
+  lcd.setCursor(com, com1);
+  Lcd_h = val / 100;
+  Lcd_hr = val % 100;
+  Lcd_t = Lcd_hr / 10;
+  Lcd_o = Lcd_hr % 10;
+
+  lcd.setCursor(com, com1);
+  lcd.write(Lcd_h + 0x30);
+  lcd.setCursor(com + 1, com1);
+  lcd.write(Lcd_t + 0x30);
+  lcd.setCursor(com + 2, com1);
+  lcd.write(Lcd_o + 0x30);
+}
